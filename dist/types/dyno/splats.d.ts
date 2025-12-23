@@ -6,9 +6,14 @@ export declare const Gsplat: {
 export declare const TPackedSplats: {
     type: "PackedSplats";
 };
+export declare const TExtSplats: {
+    type: "ExtSplats";
+};
 export declare const numPackedSplats: (packedSplats: DynoVal<typeof TPackedSplats>) => DynoVal<"int">;
 export declare const readPackedSplat: (packedSplats: DynoVal<typeof TPackedSplats>, index: DynoVal<"int">) => DynoVal<typeof Gsplat>;
 export declare const readPackedSplatRange: (packedSplats: DynoVal<typeof TPackedSplats>, index: DynoVal<"int">, base: DynoVal<"int">, count: DynoVal<"int">) => DynoVal<typeof Gsplat>;
+export declare const numExtSplats: (extSplats: DynoVal<typeof TExtSplats>) => DynoVal<"int">;
+export declare const readExtSplat: (extSplats: DynoVal<typeof TExtSplats>, index: DynoVal<"int">) => DynoVal<typeof Gsplat>;
 export declare const splitGsplat: (gsplat: DynoVal<typeof Gsplat>) => SplitGsplat;
 export declare const combineGsplat: ({ gsplat, flags, index, center, scales, quaternion, rgba, rgb, opacity, x, y, z, r, g, b, }: {
     gsplat?: DynoVal<typeof Gsplat>;
@@ -66,6 +71,24 @@ export declare class ReadPackedSplatRange extends Dyno<{
         index?: DynoVal<"int">;
         base?: DynoVal<"int">;
         count?: DynoVal<"int">;
+    });
+    dynoOut(): DynoValue<typeof Gsplat>;
+}
+export declare const defineExtSplats: string;
+export declare class NumExtSplats extends UnaryOp<typeof TExtSplats, "int", "numSplats"> {
+    constructor({ extSplats }: {
+        extSplats: DynoVal<typeof TExtSplats>;
+    });
+}
+export declare class ReadExtSplat extends Dyno<{
+    extSplats: typeof TExtSplats;
+    index: "int";
+}, {
+    gsplat: typeof Gsplat;
+}> implements HasDynoOut<typeof Gsplat> {
+    constructor({ extSplats, index, }: {
+        extSplats?: DynoVal<typeof TExtSplats>;
+        index?: DynoVal<"int">;
     });
     dynoOut(): DynoValue<typeof Gsplat>;
 }

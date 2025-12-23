@@ -8,14 +8,11 @@ export declare const outputRgba8: (rgba8: DynoVal<"vec4">) => OutputRgba8;
 export declare class OutputPackedSplat extends Dyno<{
     gsplat: typeof Gsplat;
     rgbMinMaxLnScaleMinMax: "vec4";
-}, {
-    output: "uvec4";
-}> implements HasDynoOut<"uvec4"> {
+}, Record<string, never>> {
     constructor({ gsplat, rgbMinMaxLnScaleMinMax, }: {
         gsplat?: DynoVal<typeof Gsplat>;
         rgbMinMaxLnScaleMinMax?: DynoVal<"vec4">;
     });
-    dynoOut(): DynoValue<"uvec4">;
 }
 export declare class OutputExtendedSplat extends Dyno<{
     gsplat: typeof Gsplat;
@@ -23,7 +20,6 @@ export declare class OutputExtendedSplat extends Dyno<{
     constructor({ gsplat, }: {
         gsplat?: DynoVal<typeof Gsplat>;
     });
-    dynoOut(): DynoValue<"uvec4">;
 }
 declare class OutputSplatDepth extends Dyno<{
     gsplat: typeof Gsplat;

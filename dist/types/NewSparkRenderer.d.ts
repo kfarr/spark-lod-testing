@@ -1,4 +1,4 @@
-import { PackedSplats, SplatMesh } from '.';
+import { ExtSplats, PackedSplats, PagedSplats, SplatMesh, SplatPager } from '.';
 import { NewSplatAccumulator } from './NewSplatAccumulator';
 import { NewSplatWorker } from './NewSplatWorker';
 import * as THREE from "three";
@@ -51,6 +51,11 @@ export interface NewSparkRendererOptions {
      * @default 512.0
      */
     maxPixelRadius?: number;
+    /**
+     * Whether to use extended Gsplat encoding for intermediary splats.
+     * @default false
+     */
+    extSplats?: boolean;
     /**
      * Minimum alpha value for splat rendering.
      * @default 0.5 * (1.0 / 255.0)
@@ -141,6 +146,9 @@ export interface NewSparkRendererOptions {
     globalLodScale?: number;
     outsideFoveate?: number;
     behindFoveate?: number;
+    coneFov0?: number;
+    coneFov?: number;
+    coneFoveate?: number;
     numLodFetchers?: number;
     target?: {
         /**
@@ -166,6 +174,12 @@ export interface NewSparkRendererOptions {
          */
         superXY?: number;
     };
+    extraUniforms?: Record<string, unknown>;
+    vertexShader?: string;
+    fragmentShader?: string;
+    transparent?: boolean;
+    depthTest?: boolean;
+    depthWrite?: boolean;
 }
 export declare class NewSparkRenderer extends THREE.Mesh {
     renderer: THREE.WebGLRenderer;
@@ -179,6 +193,7 @@ export declare class NewSparkRenderer extends THREE.Mesh {
     maxStdDev: number;
     minPixelRadius: number;
     maxPixelRadius: number;
+    extSplats: boolean;
     minAlpha: number;
     enable2DGS: boolean;
     preBlurAmount: number;
@@ -216,6 +231,9 @@ export declare class NewSparkRenderer extends THREE.Mesh {
     globalLodScale: number;
     outsideFoveate: number;
     behindFoveate: number;
+    coneFov0: number;
+    coneFov: number;
+    coneFoveate: number;
     numLodFetchers: number;
     lodWorker: NewSplatWorker | null;
     lodMeshes: {
@@ -223,12 +241,13 @@ export declare class NewSparkRenderer extends THREE.Mesh {
         version: number;
     }[];
     lodDirty: boolean;
-    lodIds: Map<PackedSplats, {
+    lodIds: Map<PackedSplats | ExtSplats | PagedSplats, {
         lodId: number;
         lastTouched: number;
+        rootPage?: number;
     }>;
-    lodIdToSplats: Map<number, PackedSplats>;
-    lodInitQueue: PackedSplats[];
+    lodIdToSplats: Map<number, PackedSplats | ExtSplats | PagedSplats>;
+    lodInitQueue: (PackedSplats | ExtSplats | PagedSplats)[];
     lodPos: THREE.Vector3;
     lodQuat: THREE.Quaternion;
     lodInstances: Map<SplatMesh, {
@@ -238,6 +257,10 @@ export declare class NewSparkRenderer extends THREE.Mesh {
         texture: THREE.DataTexture;
     }>;
     lodFetchers: Promise<void>[];
+    chunksToFetch: {
+        lodId: number;
+        chunk: number;
+    }[];
     lodInserts: {
         lodId: number;
         pageBase: number;
@@ -245,6 +268,14 @@ export declare class NewSparkRenderer extends THREE.Mesh {
         count: number;
         lodTreeData: Uint32Array;
     }[];
+    lodClears: {
+        lodId: number;
+        pageBase: number;
+        chunkBase: number;
+        count: number;
+    }[];
+    pager?: SplatPager;
+    pagerId: number;
     target?: THREE.WebGLRenderTarget;
     backTarget?: THREE.WebGLRenderTarget;
     superPixels?: Uint8Array;
@@ -315,6 +346,9 @@ export declare class NewSparkRenderer extends THREE.Mesh {
             type: string;
             value: THREE.DataTexture;
         };
+        enableExtSplats: {
+            value: boolean;
+        };
         extSplats: {
             type: string;
             value: THREE.DataArrayTexture;
@@ -341,15 +375,19 @@ export declare class NewSparkRenderer extends THREE.Mesh {
     }): Promise<void>;
     private updateInternal;
     private driveSort;
+    private ensureLodWorker;
     private driveLod;
     private initLodTree;
     private updateLodInstances;
+    private driveLodFetchers;
+    private fetchLodChunk;
     private cleanupLodTrees;
     private updateLodIndices;
     private readbackDepth;
     private saveRenderState;
     private resetRenderState;
     private static emptyOrdering;
+    render(scene: THREE.Scene, camera: THREE.Camera): void;
     renderTarget({ scene, camera, }: {
         scene: THREE.Scene;
         camera: THREE.Camera;

@@ -19,7 +19,10 @@ export declare class NewSplatAccumulator {
     mapping: GeneratorMapping[];
     version: number;
     mappingVersion: number;
-    constructor();
+    extSplats: boolean;
+    constructor({ extSplats }?: {
+        extSplats?: boolean;
+    });
     dispose(): void;
     getTextures(): THREE.DataArrayTexture[];
     static emptyTexture: THREE.DataArrayTexture;
@@ -40,6 +43,7 @@ export declare class NewSplatAccumulator {
         program: DynoProgram;
         material: THREE.RawShaderMaterial;
     };
+    static programExtTemplate: DynoProgramTemplate;
     static programTemplate: DynoProgramTemplate;
     static generatorProgram: Map<GsplatGenerator, DynoProgram>;
     static fullScreenQuad: FullScreenQuad;
