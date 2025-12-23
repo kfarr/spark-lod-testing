@@ -35,6 +35,8 @@ uniform usampler2D ordering;
 uniform usampler2DArray extSplats;
 uniform usampler2DArray extSplats2;
 
+#include <logdepthbuf_pars_vertex>
+
 void main() {
     // Default to outside the frustum so it's discarded if we return early
     gl_Position = vec4(0.0, 0.0, 2.0, 1.0);
@@ -129,6 +131,8 @@ void main() {
         vec3 viewPos = viewCenter + quatVec(viewQuaternion, offset);
         gl_Position = projectionMatrix * vec4(viewPos, 1.0);
         vNdc = gl_Position.xyz / gl_Position.w;
+
+        #include <logdepthbuf_vertex>
         return;
     }
 
@@ -225,4 +229,6 @@ void main() {
     vSplatUv = position.xy * adjustedStdDev;
     vNdc = ndc;
     gl_Position = vec4(ndc.xy * clipCenter.w, clipCenter.zw);
+
+    #include <logdepthbuf_vertex>
 }

@@ -22,6 +22,8 @@ in vec3 vNdc;
 flat in uint vSplatIndex;
 flat in float adjustedStdDev;
 
+#include <logdepthbuf_pars_fragment>
+
 void main() {
     vec4 rgba = vRgba;
 
@@ -47,4 +49,6 @@ void main() {
     #else
         fragColor = rgba;
     #endif
+
+    #include <logdepthbuf_fragment>
 }
