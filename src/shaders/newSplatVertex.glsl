@@ -36,11 +36,9 @@ uniform usampler2D ordering;
 uniform usampler2DArray extSplats;
 uniform usampler2DArray extSplats2;
 
-#ifdef USE_LOGARITHMIC_DEPTH_BUFFER
-    bool isPerspectiveMatrix( mat4 m ) {
-      return m[ 2 ][ 3 ] == - 1.0;
-    }
-#endif
+bool isPerspectiveMatrix( mat4 m ) {
+    return m[ 2 ][ 3 ] == - 1.0;
+}
 
 void main() {
     // Default to outside the frustum so it's discarded if we return early
