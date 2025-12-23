@@ -316,6 +316,7 @@ dependencies = [
  "anyhow",
  "glam",
  "half",
+ "itertools",
  "miniz_oxide",
  "ordered-float",
  "serde",
