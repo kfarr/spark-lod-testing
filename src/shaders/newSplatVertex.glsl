@@ -36,6 +36,12 @@ uniform usampler2D ordering;
 uniform usampler2DArray extSplats;
 uniform usampler2DArray extSplats2;
 
+#ifdef USE_LOGDEPTHBUF
+    bool isPerspectiveMatrix( mat4 m ) {
+      return m[ 2 ][ 3 ] == - 1.0;
+    }
+#endif
+
 void main() {
     // Default to outside the frustum so it's discarded if we return early
     gl_Position = vec4(0.0, 0.0, 2.0, 1.0);
